@@ -865,6 +865,7 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
     static struct option longopts[] =
     {
         {"port", required_argument, NULL, 'p'},
+        {"uport", required_argument, NULL, OPT_SERVER_UDP_PORT},
         {"format", required_argument, NULL, 'f'},
         {"interval", required_argument, NULL, 'i'},
         {"daemon", no_argument, NULL, 'D'},
@@ -1146,6 +1147,14 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
 		    return -1;
 		}
                 test->bind_port = portno;
+                break;
+            case OPT_SERVER_UDP_PORT:
+		portno = atoi(optarg);
+		if (portno < 1 || portno > 65535) {
+		    i_errno = IEBADPORT;
+		    return -1;
+		}
+                test->server_udp_port = portno;
                 break;
             case 'M':
                 test->settings->mss = atoi(optarg);
@@ -2485,6 +2494,7 @@ iperf_defaults(struct iperf_test *testp)
     testp->congestion_used = NULL;
     testp->remote_congestion_used = NULL;
     testp->server_port = PORT;
+    testp->server_udp_port = PORT;
     testp->ctrl_sck = -1;
     testp->prot_listener = -1;
     testp->other_side_has_retransmits = 0;
